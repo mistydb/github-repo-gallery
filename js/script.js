@@ -1,6 +1,9 @@
 // select div section with overview class for profile
 const overview = document.querySelector(".overview");
+//  select unordered list for the repos
+const repoList = document.querySelector(".repo-list");
 const username = "mistydb";
+
 
 const getUserData = async function (){
     const res = await fetch(`https://api.github.com/users/${username}`);
@@ -24,4 +27,22 @@ const display = function (data){
     <p><strong>Number of public repos:</strong> ${data['public_repos']}</p>
   </div>`;
   overview.append(div);
+  getRepos();
 };
+
+const getRepos = async function (){
+    const fetchRepos = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`);
+    const list = await fetchRepos.json();
+    console.log(list);
+    displayRepoInfo(list);
+};
+
+const displayRepoInfo = function (repos) {
+    for (let repo of repos) {
+        let listItem = document.createElement("li");
+        listItem.classList.add("repo");
+        listItem.innerHTML = `<h3>${repo.name}</h3>`;
+        repoList.append(listItem);
+    };
+};
+
