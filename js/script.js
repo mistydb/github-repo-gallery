@@ -6,6 +6,12 @@ const repoList = document.querySelector(".repo-list");
 const repoSection = document.querySelector(".repos");
 //  select where repo data will display
 const repoData = document.querySelector(".repo-data");
+// select back to repo gallery button
+const backToRepos = document.querySelector(".view-repos");
+// select search input box 
+const filterInput = document.querySelector(".filter-repos");
+
+
 const username = "mistydb";
 
 
@@ -42,7 +48,8 @@ const getRepos = async function (){
 };
 
 const displayRepos = function (repos) {
-    for (let repo of repos) {
+    filterInput.classList.remove("hide");
+    for (const repo of repos) {
         let listItem = document.createElement("li");
         listItem.classList.add("repo");
         listItem.innerHTML = `<h3>${repo.name}</h3>`;
@@ -61,7 +68,7 @@ const getRepoInfo = async function (repoName){
     const getInfo = await fetch(`https://api.github.com/repos/${username}/${repoName}`);
     const repoInfo = await getInfo.json();
     console.log(repoInfo);
-    const fetchLanguages = await fetch(`https://api.github.com/repos/${username}/${repoName}/languages`);
+    const fetchLanguages = await fetch(repoInfo.languages_url);
     const languageData = await fetchLanguages.json();
     console.log(languageData);
     const languages = [];
@@ -84,4 +91,26 @@ const displayRepoInfo = function (repoInfo, languages) {
     repoData.append(div);
     repoData.classList.remove("hide");
     repoSection.classList.add("hide");
+    backToRepos.classList.remove("hide");
     };
+
+backToRepos.addEventListener("click", function (e) {
+    repoSection.classList.remove("hide");
+    repoData.classList.add("hide");
+    backToRepos.classList.add("hide");
+});
+
+filterInput.addEventListener("input", function (e) {
+    const input = e.target.value;
+    const repos = document.querySelectorAll(".repo");
+    const inputLowerCase = input.toLowerCase();
+    
+    for (const repo of repos) {
+        const repoLowerCase = repo.innerText.toLowerCase();
+        if (repoLowerCase.includes(inputLowerCase)) {
+            repo.classList.remove("hide");
+        } else {
+            repo.classList.add("hide");
+        }
+    }
+});
